@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import {
-  Crown,
-  Search,
-  User,
-  Heart,
   ShoppingBag,
-  MessageCircle,
-  X,
+  Search,
   Menu,
-  PackageCheck,
-  LayoutDashboard,
+  X,
   Phone,
-  Sparkles,
-  Info,
-  PhoneCall,
-  Star,
+  Crown,
+  Heart,
+  User,
+  LayoutDashboard,
+  MessageCircle,
+  PackageCheck,
 } from 'lucide-react';
 import { StoreSettings, PageRoute } from '../types';
+import { defaultStoreSettings } from '../data/initialData';
 
 interface HeaderProps {
   currentPage: PageRoute;
@@ -28,10 +25,7 @@ interface HeaderProps {
   onOpenTracking: () => void;
   onOpenAdmin: () => void;
   searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  selectedCategory?: string;
-  onSelectCategory?: (category: string) => void;
-  cartTotal?: number;
+  setSearchQuery: (q: string) => void;
   storeSettings?: StoreSettings;
 }
 
@@ -42,11 +36,10 @@ export const Header: React.FC<HeaderProps> = ({
   wishlistCount,
   onOpenCart,
   onOpenWishlist,
-  onOpenTracking,
   onOpenAdmin,
   searchQuery,
   setSearchQuery,
-  storeSettings,
+  storeSettings = defaultStoreSettings,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -55,17 +48,17 @@ export const Header: React.FC<HeaderProps> = ({
   const whatsapp = storeSettings?.whatsapp || '8801796962283';
   const announcement =
     storeSettings?.announcementText ||
-    'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি সুবিধা | ২-৩ দিনে হোম ডেলিভারি | দেখে নিয়ে মূল্য পরিশোধ';
+    '✨ স্পেশাল বৈশাখী কালেকশন ২০২৬ • সারা বাংলাদেশে ক্যাশ অন ডেলিভারি সুবিধা ✨';
 
   const handleNav = (page: PageRoute) => {
     onNavigate(page);
     setMobileMenuOpen(false);
   };
 
+  // Main menu links (Tracking removed as requested to keep it separate)
   const navLinks: { id: PageRoute; label: string; badge?: string }[] = [
     { id: 'home', label: 'হোম' },
     { id: 'shop', label: 'শপ (সব শাড়ি)' },
-    { id: 'tracking', label: 'ট্র্যাকিং' },
     { id: 'reviews', label: 'রিভিউ' },
     { id: 'care', label: 'শাড়ির যত্ন' },
     { id: 'about', label: 'আমাদের গল্প' },
@@ -81,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
             <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <span className="truncate text-rose-100">{announcement}</span>
           </div>
-          <div className="flex items-center gap-4 shrink-0 text-[11px] font-medium">
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0 text-[11px] font-medium">
             <a
               href={`tel:${phone}`}
               className="hidden sm:flex items-center gap-1 text-rose-200 hover:text-white transition-colors"
@@ -89,15 +82,20 @@ export const Header: React.FC<HeaderProps> = ({
               <Phone className="w-3 h-3 text-amber-400" />
               <span>হটলাইন: {phone}</span>
             </a>
+
+            {/* Separate Order Tracking link in top utility bar */}
             <button
               onClick={() => handleNav('tracking')}
-              className={`hover:text-emerald-300 transition-colors flex items-center gap-1 cursor-pointer ${
-                currentPage === 'tracking' ? 'text-emerald-300 font-bold' : 'text-emerald-400'
+              className={`transition-colors flex items-center gap-1 cursor-pointer px-2 py-0.5 rounded-full border ${
+                currentPage === 'tracking'
+                  ? 'bg-emerald-950/90 border-emerald-500/80 text-emerald-300 font-bold'
+                  : 'bg-emerald-950/40 border-emerald-500/30 text-emerald-400 hover:text-emerald-300'
               }`}
             >
               <PackageCheck className="w-3.5 h-3.5" />
               <span>অর্ডার ট্র্যাক</span>
             </button>
+
             <button
               onClick={onOpenAdmin}
               className="hover:text-amber-300 transition-colors flex items-center gap-1 cursor-pointer text-stone-300"
@@ -145,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
-            {/* Desktop Navigation links */}
+            {/* Desktop Main Navigation Menu Links */}
             <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-xs xl:text-sm font-semibold">
               {navLinks.map((link) => {
                 const isActive = currentPage === link.id;
@@ -170,11 +168,24 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Right Action Buttons */}
             <div className="flex items-center gap-1 sm:gap-2.5">
+              {/* Separate Desktop Tracking Button */}
+              <button
+                onClick={() => handleNav('tracking')}
+                className={`hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer mr-1 ${
+                  currentPage === 'tracking'
+                    ? 'bg-emerald-950 text-emerald-300 border-emerald-500 shadow-xs'
+                    : 'bg-[#18080f] text-emerald-400 border-emerald-500/40 hover:border-emerald-400 hover:text-emerald-300'
+                }`}
+                title="লাইভ অর্ডার ট্র্যাকিং"
+              >
+                <PackageCheck className="w-3.5 h-3.5" />
+                <span>ট্র্যাক অর্ডার</span>
+              </button>
+
               <button
                 onClick={() => {
                   setSearchOpen(!searchOpen);
                   if (!searchOpen && currentPage !== 'shop') {
-                    // navigate to shop when user starts searching
                     onNavigate('shop');
                   }
                 }}
@@ -232,9 +243,9 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Expandable Live Search Bar */}
+          {/* Quick Search Slideout Bar */}
           {searchOpen && (
-            <div className="py-2.5 pb-3 border-t border-rose-950/80 animate-in fade-in slide-in-from-top-1">
+            <div className="py-2.5 pb-4 border-t border-rose-950/80 animate-fade-in">
               <div className="relative max-w-xl mx-auto">
                 <input
                   type="text"
@@ -272,37 +283,59 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Collapsible Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#16050b] border-t border-rose-950 px-4 py-4 space-y-1.5 shadow-2xl">
-          {navLinks.map((link) => {
-            const isActive = currentPage === link.id;
-            return (
-              <button
-                key={link.id}
-                onClick={() => handleNav(link.id)}
-                className={`w-full text-left py-2 px-2.5 text-sm font-semibold rounded-xl flex items-center justify-between border-b border-rose-950/80 cursor-pointer ${
-                  isActive
-                    ? 'bg-rose-950/60 text-white font-bold text-amber-300'
-                    : 'text-stone-100 hover:text-rose-400'
-                }`}
-              >
-                <span>{link.label}</span>
-                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
-              </button>
-            );
-          })}
+        <div className="lg:hidden bg-[#16050b] border-t border-rose-950 px-4 py-4 space-y-2 shadow-2xl">
+          <div className="space-y-1">
+            {navLinks.map((link) => {
+              const isActive = currentPage === link.id;
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => handleNav(link.id)}
+                  className={`w-full text-left py-2 px-2.5 text-sm font-semibold rounded-xl flex items-center justify-between border-b border-rose-950/80 cursor-pointer ${
+                    isActive
+                      ? 'bg-rose-950/60 text-white font-bold text-amber-300'
+                      : 'text-stone-100 hover:text-rose-400'
+                  }`}
+                >
+                  <span>{link.label}</span>
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Separated Order Tracking Card for Mobile */}
+          <div className="pt-2">
+            <button
+              onClick={() => handleNav('tracking')}
+              className={`w-full text-left py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-between border cursor-pointer transition-colors ${
+                currentPage === 'tracking'
+                  ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300'
+                  : 'bg-[#18080f] border-emerald-500/40 text-emerald-400 hover:border-emerald-500 hover:text-emerald-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <PackageCheck className="w-4 h-4 text-emerald-400" />
+                <span>লাইভ অর্ডার ট্র্যাকিং</span>
+              </div>
+              <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-mono text-emerald-300">
+                ট্র্যাক করুন
+              </span>
+            </button>
+          </div>
 
           <button
             onClick={() => {
               setMobileMenuOpen(false);
               onOpenAdmin();
             }}
-            className="w-full text-left py-2 px-2.5 text-sm font-semibold text-rose-300 flex items-center gap-2 cursor-pointer border-b border-rose-950/80"
+            className="w-full text-left py-2 px-2.5 text-sm font-semibold text-rose-300 flex items-center gap-2 cursor-pointer border-t border-rose-950/80 pt-3"
           >
             <LayoutDashboard className="w-4 h-4" />
             <span>অ্যাডমিন ও মার্চেন্ট প্যানেল</span>
           </button>
 
-          <div className="pt-2">
+          <div className="pt-1">
             <a
               href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('হ্যালো, আমি আম্বিয়া শাড়ি বাড়ি থেকে শাড়ি অর্ডার করতে চাই।')}`}
               target="_blank"

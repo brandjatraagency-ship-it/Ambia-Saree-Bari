@@ -8,8 +8,6 @@ import {
   CheckCircle2,
   PhoneCall,
   MessageCircle,
-  Star,
-  ChevronRight,
 } from 'lucide-react';
 import {
   Product,
@@ -24,6 +22,7 @@ import {
 import { HeroSlider } from '../components/HeroSlider';
 import { ProductCard } from '../components/ProductCard';
 import { FAQSection } from '../components/FAQSection';
+import { ReviewsSection } from '../components/ReviewsSection';
 
 interface HomePageProps {
   heroSlides: HeroSlide[];
@@ -56,45 +55,88 @@ export const HomePage: React.FC<HomePageProps> = ({
   onQuickView,
   onNavigate,
 }) => {
-  const featuredProducts = products.slice(0, 8);
-  const hotDeals = products.filter((p) => p.isHotDeal || p.isBestSeller).slice(0, 4);
   const phone = storeSettings.phone || '01796962283';
   const whatsapp = storeSettings.whatsapp || '8801796962283';
 
-  return (
-    <div className="space-y-12 sm:space-y-16 animate-fade-in">
-      {/* 1. HERO SLIDER */}
-      <HeroSlider
-        slides={heroSlides}
-        heroSettings={heroSettings}
-        categoryHighlights={categoryHighlights}
-        storeSettings={storeSettings}
-        onExploreClick={() => onNavigate('shop')}
-        onQuickOrderHero={() => {
-          if (products[0]) onDirectOrder(products[0]);
-        }}
-        onSelectCategory={(cat) => onNavigate('shop', cat)}
-      />
+  // Featured sarees to show on homepage
+  const featuredProducts = products.slice(0, 8);
+  const hotDeals = products.filter((p) => p.isHotDeal || p.isBestSeller).slice(0, 4);
 
-      {/* 2. TRUST BADGES / PILLARS */}
+  return (
+    <div className="space-y-12 sm:space-y-16 animate-fade-in pb-12">
+      {/* 1. HERO SLIDER */}
+      <section className="w-full">
+        <HeroSlider
+          slides={heroSlides}
+          settings={heroSettings}
+          onCtaClick={(slide) => {
+            if (slide.linkUrl === 'shop' || slide.linkUrl?.includes('shop')) {
+              onNavigate('shop');
+            } else if (slide.linkUrl) {
+              onNavigate('shop', slide.linkUrl);
+            } else {
+              onNavigate('shop');
+            }
+          }}
+        />
+      </section>
+
+      {/* 2. CATEGORY HIGHLIGHTS / QUICK TILES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="text-center max-w-xl mx-auto mb-8">
+          <span className="text-rose-400 text-xs font-bold uppercase tracking-widest block mb-1">
+            ঐতিহ্য ও আধুনিকতার অনন্য মেলবন্ধন
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-stone-100 font-['Anek_Bangla']">
+            শাড়ির ক্যাটাগরি সমূহ
+          </h2>
+          <p className="text-xs sm:text-sm text-stone-400 mt-1">
+            আপনার পছন্দের ক্যাটাগরি বেছে নিন এবং ঘরে বসেই প্রিমিয়াম শাড়ি অর্ডার করুন
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+          {categoryHighlights.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => onNavigate('shop', cat.id)}
+              className="group relative bg-[#18080f] rounded-2xl overflow-hidden border border-rose-950/80 hover:border-rose-700/80 transition-all p-3 text-center flex flex-col items-center justify-center gap-2 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
+            >
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-rose-900/60 group-hover:border-amber-400 transition-colors shadow-inner">
+                <img
+                  src={cat.imageUrl}
+                  alt={cat.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div>
+                <h3 className="text-xs sm:text-sm font-bold text-stone-200 group-hover:text-amber-300 transition-colors line-clamp-1">
+                  {cat.title}
+                </h3>
+                <span className="text-[10px] text-rose-300/80">কালেকশন দেখুন</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Value Propositions / Trust Badges */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 pt-8 border-t border-rose-950/80">
           <div className="bg-[#18080f] border border-rose-950/80 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm hover:border-rose-800/80 transition-colors">
-            <div className="w-10 h-10 rounded-xl bg-rose-950/80 border border-rose-800/60 flex items-center justify-center text-rose-400 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-rose-950/80 border border-rose-800/60 flex items-center justify-center text-amber-400 shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
               <h4 className="font-bold text-sm text-stone-100 font-['Anek_Bangla']">
-                ১০০% খাঁটি তাঁতের শাড়ি
+                ১০০% খাঁটি তাঁতের গ্যারান্টি
               </h4>
               <p className="text-xs text-stone-400 mt-1">
-                টাঙ্গাইলের অভিজ্ঞ কারিগরদের হাতে বোনা খাঁটি শাড়ি
+                টাঙ্গাইলের ঐতিহ্যবাহী দক্ষ তাঁতীদের হাতে নিখুঁত বুননে তৈরি
               </p>
             </div>
           </div>
 
           <div className="bg-[#18080f] border border-rose-950/80 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm hover:border-rose-800/80 transition-colors">
-            <div className="w-10 h-10 rounded-xl bg-rose-950/80 border border-rose-800/60 flex items-center justify-center text-amber-400 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-rose-950/80 border border-rose-800/60 flex items-center justify-center text-rose-400 shrink-0">
               <Truck className="w-5 h-5" />
             </div>
             <div>
@@ -210,55 +252,8 @@ export const HomePage: React.FC<HomePageProps> = ({
         </section>
       )}
 
-      {/* 5. CUSTOMER REVIEWS PREVIEW */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between mb-6 border-b border-rose-950/80 pb-4">
-          <div>
-            <div className="flex items-center gap-1.5 text-amber-400 text-xs font-bold mb-1">
-              <Star className="w-4 h-4 fill-amber-400" />
-              <span>৪.৯ / ৫.০ স্টার রেটিং (৪০০+ রিভিউ)</span>
-            </div>
-            <h3 className="text-2xl font-black text-stone-100 font-['Anek_Bangla']">
-              সন্তুষ্ট গ্রাহকদের মন্তব্য
-            </h3>
-          </div>
-          <button
-            onClick={() => onNavigate('reviews')}
-            className="text-rose-400 hover:text-rose-300 text-sm font-bold flex items-center gap-1 cursor-pointer"
-          >
-            <span>সব রিভিউ ({reviews.length})</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {reviews.slice(0, 3).map((rev) => (
-            <div
-              key={rev.id}
-              className="bg-[#18080f] border border-rose-950/80 rounded-2xl p-5 space-y-3 shadow-xs"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-bold text-sm text-stone-100">{rev.customerName}</h4>
-                  <span className="text-[11px] text-stone-400">{rev.location}</span>
-                </div>
-                <div className="flex items-center gap-0.5 text-amber-400">
-                  {Array.from({ length: rev.rating }).map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                  ))}
-                </div>
-              </div>
-              <p className="text-xs text-stone-300 italic leading-relaxed">
-                "{rev.comment}"
-              </p>
-              <div className="pt-2 border-t border-rose-950/60 flex items-center justify-between text-[11px] text-stone-400">
-                <span className="text-rose-300 font-medium">শাড়ি: {rev.productName}</span>
-                <span className="text-emerald-400 font-bold">✓ ভেরিফাইড ক্রেতা</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* 5. সম্মানিত গ্রাহকদের রিভিউ (স্ক্রিনশট সহ পূর্বের মতো হোম পেজের নিচের দিকে) */}
+      <ReviewsSection reviews={reviews} onNavigate={onNavigate} />
 
       {/* 6. FAQ PREVIEW */}
       <FAQSection faqs={faqs.slice(0, 4)} />

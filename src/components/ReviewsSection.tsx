@@ -5,64 +5,69 @@ import {
   MoreVertical,
   ThumbsUp,
   CircleCheck,
+  Star,
+  ChevronRight,
+  Sparkles,
 } from 'lucide-react';
-import { Review } from '../types';
+import { Review, PageRoute } from '../types';
 
 interface ReviewsSectionProps {
   reviews?: Review[];
+  onNavigate?: (page: PageRoute) => void;
 }
 
-export const ReviewsSection: React.FC<ReviewsSectionProps> = () => {
+export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
+  onNavigate,
+}) => {
   const chats = [
     {
       id: 'chat-1',
       name: 'Jesi Queen',
-      subtext: '+2',
-      time: '5:17',
-      battery: '64%',
-      adText:
-        'This chat contains a reply to an ad. #গার্লস_ফ্যাশন_কম_দামে_সবচেয়ে_ভালো_কোয়ালিটি',
+      subtext: '+2 • সক্রিয়',
+      time: '5:17 PM',
+      battery: '84%',
+      adText: 'This chat contains a reply to Ambia Saree Bari. #আম্বিয়া_শাড়ি_বাড়ি_সেরা_কোয়ালিটি',
       messages: [
-        { sender: 'user', text: 'Ok', time: '5:10' },
+        { sender: 'user', text: 'আসসালামু আলাইকুম, শাড়িটি বুকিং করেছিলাম।', time: '5:10' },
         { sender: 'user', text: 'Booking done ✓✓', time: '5:12' },
         {
           sender: 'user',
           image:
             'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80',
-          caption: 'পার্সেল খুলে দেখলাম, কাপড়টা অনেক নরম ও সুন্দর!',
+          caption: 'পার্সেল খুলে দেখলাম, কাপড়টা অনেক নরম ও জড়ির কাজ অসাধারণ!',
         },
         {
           sender: 'admin',
-          text: 'হ্যালো Jesi Queen (ম্যাম), Girls Fashion-এ যোগাযোগ করার জন্য ধন্যবাদ। শাড়িটি পছন্দ হওয়ায় আমরা অত্যন্ত আনন্দিত।',
+          text: 'ওয়ালাইকুম আসসালাম Jesi Queen (ম্যাম), আম্বিয়া শাড়ি বাড়িতে যোগাযোগ করার জন্য ধন্যবাদ। শাড়িটি পছন্দ হওয়ায় আমরা অত্যন্ত আনন্দিত।',
           time: '5:15',
         },
-        { sender: 'user', text: 'Thanks, Parcel paichi ❤️', time: '5:16' },
+        { sender: 'user', text: 'Thanks a lot, Parcel paichi ❤️ ছবির চেয়েও সুন্দর!', time: '5:16' },
       ],
     },
     {
       id: 'chat-2',
       name: 'BN Bithu',
-      subtext: '+ Add details and labels',
-      time: '5:47',
-      battery: '37%',
-      adText: 'This chat was started from your ad.',
+      subtext: 'Verified Customer • টাঙ্গাইল তাঁত',
+      time: '5:47 PM',
+      battery: '72%',
+      adText: 'Verified Order from Ambia Saree Bari #খাঁটি_টাঙ্গাইল_তাঁত',
       messages: [
-        { sender: 'user', text: 'ওকে', time: '5:40' },
+        { sender: 'user', text: 'ভাইয়া পার্সেল হাতে পেয়েছি', time: '5:40' },
         { sender: 'user', isThumbsUp: true },
         {
           sender: 'user',
           image:
             'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80',
-          caption: 'টাঙ্গাইল সুতি তাঁতের শাড়ি',
+          caption: 'খাঁটি সুতি টাঙ্গাইল তাঁতের শাড়ি',
         },
         {
           sender: 'user',
-          text: 'vaiya parcel payci... Onek sundhor... Alhamdulillah',
+          text: 'vaiya parcel payci... Onek sundhor shari ta... Alhamdulillah! Gorome pore khub aram.',
           time: '5:45',
         },
         {
           sender: 'admin',
-          text: 'আলহামদুলিল্লাহ আপু! আপনার সুন্দর মতামতের জন্য অসংখ্য ধন্যবাদ।',
+          text: 'আলহামদুলিল্লাহ আপু! আপনার এমন আন্তরিক সুন্দর মতামতের জন্য অনেক অনেক ধন্যবাদ।',
           time: '5:46',
         },
       ],
@@ -70,31 +75,30 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = () => {
     {
       id: 'chat-3',
       name: 'Samiya Jahan Imah',
-      subtext: '+4',
-      time: '12:54',
-      battery: '63%',
-      adText:
-        'This chat contains a reply to an ad. #সবনীল_কম_দামে_সবচেয়ে_ভালো_কোয়ালিটি',
+      subtext: 'Verified Order • জামদানি শাড়ি',
+      time: '12:54 PM',
+      battery: '91%',
+      adText: 'Customer review for Ambia Saree Bari #ঢাকাই_জামদানি',
       messages: [
         {
           sender: 'admin',
-          text: '(ম্যাম) Girls Fashion-এ যোগাযোগ করার জন্য ধন্যবাদ। আপনার ঠিকানায় পার্সেল পাঠিয়ে দেওয়া হয়েছে।',
+          text: 'স্নেহের ম্যাম, আম্বিয়া শাড়ি বাড়িতে যোগাযোগ করার জন্য ধন্যবাদ। আপনার ঠিকানায় রেডিয়েক্স কুরিয়ারে পার্সেল পাঠিয়ে দেওয়া হয়েছিল।',
           time: '12:48',
         },
         {
           sender: 'user',
           image:
             'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80',
-          caption: 'সাদা ও গোল্ডেন জড়ির কাজের শাড়ি',
+          caption: 'সাদা ও স্বর্ণালী অল-ওভার কাজের জামদানি শাড়ি',
         },
         {
           sender: 'user',
-          text: 'শাড়ি টা খুব ভালো হয়েছে শাড়ি টা। কাপড়টা হাতে পেয়ে খুবই পছন্দ হয়েছে।',
+          text: 'শাড়ি টা খুব ভালো হয়েছে। ডেলিভারি ম্যানের সামনে চেক করে নিয়েছি। নিখুঁত ফিনিশিং!',
           time: '12:51',
         },
         {
           sender: 'user',
-          text: 'Thanks, parcel paici. Ekdom chobir moto shundor!',
+          text: 'Thanks! Ekdom chobir moto shundor hoyeche. Amar maa khub khushi hoyechen ❤️',
           time: '12:53',
         },
       ],
@@ -105,10 +109,34 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = () => {
     <section className="w-full bg-[#0e0407] py-8 sm:py-12 border-t border-rose-950/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Banner Title */}
-        <div className="w-full bg-gradient-to-r from-rose-900 via-rose-700 to-rose-900 text-amber-100 py-3.5 px-6 rounded-xl shadow-xl text-center mb-8 border border-rose-600/40">
-          <h2 className="font-['Anek_Bangla'] text-xl sm:text-2xl md:text-3xl font-black tracking-wide drop-shadow-sm">
-            সম্মানিত কাস্টমার রিভিউ
-          </h2>
+        <div className="w-full bg-gradient-to-r from-rose-950 via-rose-800 to-rose-950 text-amber-100 py-3.5 px-6 rounded-2xl shadow-xl text-center mb-8 border border-rose-700/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2 mx-auto sm:mx-0">
+            <Sparkles className="w-5 h-5 text-amber-400" />
+            <h2 className="font-['Anek_Bangla'] text-xl sm:text-2xl md:text-3xl font-black tracking-wide drop-shadow-sm text-white">
+              সম্মানিত গ্রাহকদের রিভিউ
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5 text-amber-400">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-amber-400" />
+              ))}
+            </div>
+            <span className="text-xs font-bold text-stone-200">
+              (৪.৯ / ৫ রেটিং • ১০০% সন্তুষ্টি)
+            </span>
+          </div>
+
+          {onNavigate && (
+            <button
+              onClick={() => onNavigate('reviews')}
+              className="text-xs font-bold text-amber-300 hover:text-white flex items-center gap-1 bg-rose-900/60 px-3 py-1.5 rounded-full border border-rose-700/40 cursor-pointer transition-colors"
+            >
+              <span>সব রিভিউ দেখুন</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {/* 3 WhatsApp / Messenger Style Authentic Proof Cards */}
@@ -122,7 +150,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = () => {
               <div className="bg-[#100307] text-rose-300/80 px-4 py-1 flex items-center justify-between text-[11px] font-mono border-b border-rose-950">
                 <span>{chat.time}</span>
                 <div className="flex items-center gap-2">
-                  <span>4G</span>
+                  <span className="text-[10px]">4G VoLTE</span>
                   <span>{chat.battery}</span>
                 </div>
               </div>
@@ -138,7 +166,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = () => {
                     <h4 className="text-xs font-bold text-stone-100 leading-tight">
                       {chat.name}
                     </h4>
-                    <p className="text-[10px] text-rose-300/70">
+                    <p className="text-[10px] text-emerald-400 font-medium">
                       {chat.subtext}
                     </p>
                   </div>
@@ -170,7 +198,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = () => {
                       </div>
                     )}
                     {msg.image && (
-                      <div className="bg-[#1f0913] p-1.5 rounded-xl shadow-md border border-rose-900/60 max-w-[220px] mb-1">
+                      <div className="bg-[#1f0913] p-1.5 rounded-xl shadow-md border border-rose-900/60 max-w-[230px] mb-1">
                         <img
                           src={msg.image}
                           alt="Customer received saree"
@@ -222,7 +250,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = () => {
         <div className="mt-8 text-center text-xs text-rose-300/80 flex items-center justify-center gap-2">
           <CircleCheck className="w-4 h-4 text-emerald-400" />
           <span>
-            ১০০% আসল ও ভেরিফাইড গ্রাহক রিভিউ। প্রতিটি পার্সেল ডেলিভারিতে গ্রাহক সন্তুষ্টি আমাদের প্রধান লক্ষ্য।
+            ১০০% আসল ও ভেরিফাইড গ্রাহক রিভিউ। প্রতিটি পার্সেল ডেলিভারিতে গ্রাহক সন্তুষ্টিই আম্বিয়া শাড়ি বাড়ির প্রধান লক্ষ্য।
           </span>
         </div>
       </div>
