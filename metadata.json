@@ -1,0 +1,6 @@
+{
+  "name": "আম্বিয়া শাড়ি বাড়ি - Ambia Saree Bari",
+  "description": "আম্বিয়া শাড়ি বাড়ি - ঐতিহ্যবাহী টাঙ্গাইল তাঁত, ল্যামা সিল্ক, জামদানি ও এক্সক্লুসিভ ডিজাইনার শাড়ির অনলাইন শপ। সারা বাংলাদেশে ক্যাশ অন ডেলিভারি।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
