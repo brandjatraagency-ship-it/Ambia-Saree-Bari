@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import {
   Home,
-  PackageCheck,
-  PhoneCall,
-  Heart,
   ShoppingBag,
+  PackageCheck,
+  Heart,
+  ShoppingBasket,
   MessageCircle,
   X,
 } from 'lucide-react';
-import { StoreSettings } from '../types';
+import { StoreSettings, PageRoute } from '../types';
 
 interface MobileBottomBarProps {
+  currentPage: PageRoute;
+  onNavigate: (page: PageRoute) => void;
   cartCount: number;
   wishlistCount: number;
   onOpenCart: () => void;
@@ -21,6 +23,8 @@ interface MobileBottomBarProps {
 }
 
 export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({
+  currentPage,
+  onNavigate,
   cartCount,
   wishlistCount,
   onOpenCart,
@@ -32,12 +36,12 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({
   const [showSupportPrompt, setShowSupportPrompt] = useState(true);
   const phone = storeSettings?.phone || '01796962283';
   const whatsapp = storeSettings?.whatsapp || '8801796962283';
-  const storeName = storeSettings?.storeName || 'আম্বিয়া শাড়ি বাড়ি';
+  const storeName = storeSettings?.storeNameEn || 'Ambia Saree Bari';
 
   return (
     <>
       {/* Floating WhatsApp Quick Action Button */}
-      <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2">
+      <div className="fixed bottom-18 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2">
         {showSupportPrompt && (
           <div className="bg-[#18080f] rounded-2xl p-3 shadow-2xl border border-rose-900/80 max-w-xs text-xs relative animate-fade-in text-stone-200">
             <button
@@ -72,30 +76,49 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({
       {/* Mobile Fixed Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#120509]/95 backdrop-blur-md border-t border-rose-950 py-1.5 px-2 shadow-2xl">
         <div className="grid grid-cols-5 gap-1 text-center">
+          {/* 1. Home */}
           <button
-            onClick={onScrollToTop}
-            className="flex flex-col items-center justify-center py-1 text-rose-200 hover:text-white cursor-pointer active:scale-95 transition-transform"
+            onClick={() => {
+              onNavigate('home');
+              onScrollToTop();
+            }}
+            className={`flex flex-col items-center justify-center py-1 cursor-pointer active:scale-95 transition-transform ${
+              currentPage === 'home' ? 'text-amber-400 font-bold' : 'text-rose-200 hover:text-white'
+            }`}
           >
             <Home className="w-5 h-5" />
             <span className="text-[10px] mt-0.5 font-medium">হোম</span>
           </button>
 
+          {/* 2. Shop */}
           <button
-            onClick={onOpenTracking}
-            className="flex flex-col items-center justify-center py-1 text-rose-200 hover:text-emerald-400 cursor-pointer active:scale-95 transition-transform"
+            onClick={() => {
+              onNavigate('shop');
+              onScrollToTop();
+            }}
+            className={`flex flex-col items-center justify-center py-1 cursor-pointer active:scale-95 transition-transform ${
+              currentPage === 'shop' ? 'text-amber-400 font-bold' : 'text-rose-200 hover:text-white'
+            }`}
+          >
+            <ShoppingBasket className="w-5 h-5" />
+            <span className="text-[10px] mt-0.5 font-medium">শপ</span>
+          </button>
+
+          {/* 3. Tracking */}
+          <button
+            onClick={() => {
+              onNavigate('tracking');
+              onScrollToTop();
+            }}
+            className={`flex flex-col items-center justify-center py-1 cursor-pointer active:scale-95 transition-transform ${
+              currentPage === 'tracking' ? 'text-emerald-300 font-bold' : 'text-rose-200 hover:text-emerald-400'
+            }`}
           >
             <PackageCheck className="w-5 h-5 text-emerald-400" />
             <span className="text-[10px] mt-0.5 font-medium">ট্র্যাকিং</span>
           </button>
 
-          <a
-            href={`tel:${phone}`}
-            className="flex flex-col items-center justify-center py-1 text-rose-200 hover:text-amber-300 cursor-pointer active:scale-95 transition-transform"
-          >
-            <PhoneCall className="w-5 h-5 text-amber-400" />
-            <span className="text-[10px] mt-0.5 font-medium">কল করুন</span>
-          </a>
-
+          {/* 4. Wishlist */}
           <button
             onClick={onOpenWishlist}
             className="relative flex flex-col items-center justify-center py-1 text-rose-200 hover:text-rose-400 cursor-pointer"
@@ -109,6 +132,7 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({
             <span className="text-[10px] mt-0.5 font-medium">পছন্দ</span>
           </button>
 
+          {/* 5. Cart Bag */}
           <button
             onClick={onOpenCart}
             className="relative flex flex-col items-center justify-center py-1 text-rose-200 hover:text-rose-400 cursor-pointer"

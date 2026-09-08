@@ -6,14 +6,18 @@ import {
   PhoneCall,
   MessageCircle,
   Mail,
+  ShieldCheck,
+  Heart,
+  ChevronRight,
 } from 'lucide-react';
-import { StoreSettings } from '../types';
+import { StoreSettings, PageRoute } from '../types';
 import { defaultStoreSettings, categories } from '../data/initialData';
 
 interface FooterProps {
   onSelectCategory: (category: string) => void;
   onOpenTracking: () => void;
   onOpenAdmin?: () => void;
+  onNavigate?: (page: PageRoute, category?: string) => void;
   storeSettings?: StoreSettings;
 }
 
@@ -21,9 +25,16 @@ export const Footer: React.FC<FooterProps> = ({
   onSelectCategory,
   onOpenTracking,
   onOpenAdmin,
+  onNavigate,
   storeSettings = defaultStoreSettings,
 }) => {
   const settings = storeSettings || defaultStoreSettings;
+
+  const handleNav = (page: PageRoute, category?: string) => {
+    if (onNavigate) {
+      onNavigate(page, category);
+    }
+  };
 
   return (
     <footer id="contact" className="bg-[#0a0205] text-stone-300 pt-12 pb-24 md:pb-12 border-t border-rose-950/80">
@@ -42,15 +53,23 @@ export const Footer: React.FC<FooterProps> = ({
                   }}
                 />
               ) : null}
-              <span className="font-['Playfair_Display',serif] font-black text-xl sm:text-2xl text-stone-100 tracking-tight">
+              <button
+                onClick={() => handleNav('home')}
+                className="font-['Playfair_Display',serif] font-black text-xl sm:text-2xl text-stone-100 tracking-tight hover:text-amber-200 transition-colors text-left cursor-pointer"
+              >
                 {settings.storeNameEn || settings.storeName || 'Ambia Saree Bari'}
-              </span>
+              </button>
             </div>
             <p className="text-xs text-stone-400 leading-relaxed">
               {settings.tagline ||
-                'টাঙ্গাইলের ঐতিহ্যবাহী সুতি তাঁত, মনকাড়া ইন্ডিয়ান ল্যামা সিল্ক ও জামদানি শাড়ির বিশ্বস্ত অনলাইন শো-রুম। আমরা গ্রাহকের শতভাগ আস্থা ও আসল কোয়ালিটি নিশ্চিত করি।'}
+                'টাঙ্গাইল শাড়ির নির্ভরযোগ্য ঠিকানা। সরাসরি তাঁতিদের থেকে খাঁটি সুতি, জামদানি ও সিল্ক শাড়ির নির্ভরযোগ্য অনলাইন সম্ভার।'}
             </p>
-            <div className="pt-2 flex flex-col gap-1.5 text-xs text-stone-300">
+
+            <div className="pt-2 space-y-1.5 text-xs text-stone-400">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-rose-500" />
+                <span>১০০% আসল দেশীয় তাঁতের নিশ্চয়তা</span>
+              </div>
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-amber-400" />
                 <span>সারা দেশে ক্যাশ অন ডেলিভারি</span>
@@ -68,41 +87,94 @@ export const Footer: React.FC<FooterProps> = ({
               জনপ্রিয় শাড়ি কালেকশন
             </h4>
             <ul className="space-y-2 text-xs">
-              {categories.slice(1, 7).map((cat) => (
+              {categories.map((cat) => (
                 <li key={cat.id}>
                   <button
                     onClick={() => {
                       onSelectCategory(cat.id);
-                      window.scrollTo({ top: 400, behavior: 'smooth' });
+                      handleNav('shop', cat.id);
                     }}
-                    className="hover:text-rose-300 transition-colors cursor-pointer text-left text-stone-300"
+                    className="hover:text-rose-300 transition-colors cursor-pointer text-left text-stone-300 flex items-center gap-1.5"
                   >
-                    • {cat.name} ({cat.count})
+                    <span>•</span>
+                    <span>{cat.name}</span>
                   </button>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Col 3: Customer Support */}
+          {/* Col 3: Customer Support & Pages */}
           <div>
             <h4 className="font-bold text-sm text-stone-100 uppercase tracking-wider mb-4 border-l-2 border-rose-600 pl-2.5">
-              কাস্টমার সাপোর্ট ও সেবা
+              ওয়েবসাইট মেনু ও পেজসমূহ
             </h4>
-            <ul className="space-y-2.5 text-xs text-stone-400">
+            <ul className="space-y-2.5 text-xs text-stone-300">
               <li>
                 <button
-                  onClick={onOpenTracking}
-                  className="hover:text-white transition-colors text-amber-300 font-semibold cursor-pointer"
+                  onClick={() => handleNav('home')}
+                  className="hover:text-rose-300 transition-colors cursor-pointer flex items-center gap-1.5"
                 >
-                  📦 আপনার অর্ডার ট্র্যাক করুন
+                  <ChevronRight className="w-3.5 h-3.5 text-rose-500" />
+                  <span>হোম পেজ</span>
                 </button>
               </li>
-              <li>ডেলিভারি পলিসি ও চার্জের নিয়ম</li>
-              <li>পণ্য পরিবর্তন ও রিটার্ন গ্যারান্টি</li>
-              <li>শাড়ির যত্ন ও সুরক্ষার নির্দেশিকা</li>
+              <li>
+                <button
+                  onClick={() => handleNav('shop')}
+                  className="hover:text-rose-300 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 text-rose-500" />
+                  <span>শপ (সকল শাড়ি ক্যাটালগ)</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('tracking')}
+                  className="hover:text-emerald-300 transition-colors text-emerald-400 font-semibold cursor-pointer flex items-center gap-1.5"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                  <span>অর্ডার লাইভ ট্র্যাকিং</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('reviews')}
+                  className="hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 text-amber-400" />
+                  <span>গ্রাহক মতামত ও রিভিউ</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('care')}
+                  className="hover:text-rose-300 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 text-rose-500" />
+                  <span>শাড়ির যত্ন ও সুরক্ষার নির্দেশিকা</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('about')}
+                  className="hover:text-rose-300 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 text-rose-500" />
+                  <span>আমাদের গল্প ও তাঁতের ঐতিহ্য</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('contact')}
+                  className="hover:text-rose-300 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 text-rose-500" />
+                  <span>যোগাযোগ ও আউটলেট</span>
+                </button>
+              </li>
               {onOpenAdmin && (
-                <li>
+                <li className="pt-1">
                   <button
                     onClick={onOpenAdmin}
                     className="hover:text-rose-300 transition-colors text-stone-400 hover:underline cursor-pointer flex items-center gap-1.5"
@@ -111,7 +183,6 @@ export const Footer: React.FC<FooterProps> = ({
                   </button>
                 </li>
               )}
-              <li>পাইকারি অর্ডারের জন্য যোগাযোগ</li>
             </ul>
           </div>
 
@@ -125,7 +196,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <MapPin className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                 <span>
                   {settings.address ||
-                    'আউটলেট: আম্বিয়া শাড়ি বাড়ি, টাঙ্গাইল সদর, টাঙ্গাইল।'}
+                    'আউটলেট: আম্বিয়া শাড়ি বাড়ি, টাঙ্গাইল সদর, টাঙ্গাইল এবং ঢাকা হাব।'}
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
@@ -141,7 +212,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                 <a
                   href={`https://wa.me/${settings.whatsapp}?text=${encodeURIComponent(
-                    'হ্যালো, আমি গার্লস ফ্যাশন শাড়ি সম্পর্কে জানতে চাই',
+                    'হ্যালো, আমি আম্বিয়া শাড়ি বাড়ির শাড়ি সম্পর্কে জানতে চাই',
                   )}`}
                   target="_blank"
                   rel="noreferrer"
@@ -152,50 +223,37 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>{settings.email}</span>
+                <span>{settings.email || 'support@ambiasareebari.com'}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Partners & Payment Gateways */}
-        <div className="py-6 border-b border-rose-950/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          <div className="flex items-center gap-3">
-            <span className="text-stone-400 font-medium">ডেলিভারি পার্টনার:</span>
-            <div className="flex items-center gap-2">
-              <span className="bg-[#18080f] border border-rose-900/60 px-2.5 py-1 rounded text-[11px] font-bold text-rose-200">
-                Steadfast Courier
-              </span>
-              <span className="bg-[#18080f] border border-rose-900/60 px-2.5 py-1 rounded text-[11px] font-bold text-rose-200">
-                Pathao Courier
-              </span>
-              <span className="bg-[#18080f] border border-rose-900/60 px-2.5 py-1 rounded text-[11px] font-bold text-rose-200">
-                RedX
-              </span>
-            </div>
+        {/* Bottom Bar */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+          <p>© {new Date().getFullYear()} {settings.storeNameEn || 'Ambia Saree Bari'}. সর্বস্বত্ব সংরক্ষিত।</p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => handleNav('care')}
+              className="hover:text-stone-400 transition-colors cursor-pointer"
+            >
+              শাড়ির যত্ন
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => handleNav('contact')}
+              className="hover:text-stone-400 transition-colors cursor-pointer"
+            >
+              ডেলিভারি পলিসি
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => handleNav('contact')}
+              className="hover:text-stone-400 transition-colors cursor-pointer"
+            >
+              রিটার্ন শর্তাবলী
+            </button>
           </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-stone-400 font-medium">পেমেন্ট মেথড:</span>
-            <div className="flex items-center gap-2">
-              <span className="bg-emerald-950/80 border border-emerald-800 text-emerald-300 px-2 py-0.5 rounded text-[11px] font-bold">
-                ক্যাশ অন ডেলিভারি
-              </span>
-              <span className="bg-pink-950/80 border border-pink-800 text-pink-300 px-2 py-0.5 rounded text-[11px] font-bold">
-                bKash
-              </span>
-              <span className="bg-amber-950/80 border border-amber-800 text-amber-300 px-2 py-0.5 rounded text-[11px] font-bold">
-                Nagad
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Copyright */}
-        <div className="pt-6 text-center text-xs text-stone-500">
-          <p>
-            © ২০২৬ {settings.storeName || 'গার্লস ফ্যাশন (আম্বিয়া শাড়ি বাড়ি)'}। সর্বস্বত্ব সংরক্ষিত। ঐতিহ্যবাহী টাঙ্গাইল তাঁত ও প্রিমিয়াম শাড়ির নির্ভরযোগ্য ঠিকানা।
-          </p>
         </div>
       </div>
     </footer>

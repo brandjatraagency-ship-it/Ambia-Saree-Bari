@@ -158,3 +158,12 @@ export interface CareTip {
   desc: string;
   iconType: 'droplets' | 'sun' | 'wind' | 'shield';
 }
+
+export type PageRoute =
+  | 'home'
+  | 'shop'
+  | 'contact'
+  | 'tracking'
+  | 'reviews'
+  | 'care'
+  | 'about';

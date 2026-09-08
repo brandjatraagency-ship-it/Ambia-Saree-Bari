@@ -11,10 +11,16 @@ import {
   PackageCheck,
   LayoutDashboard,
   Phone,
+  Sparkles,
+  Info,
+  PhoneCall,
+  Star,
 } from 'lucide-react';
-import { StoreSettings } from '../types';
+import { StoreSettings, PageRoute } from '../types';
 
 interface HeaderProps {
+  currentPage: PageRoute;
+  onNavigate: (page: PageRoute) => void;
   cartCount: number;
   wishlistCount: number;
   onOpenCart: () => void;
@@ -30,6 +36,8 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  currentPage,
+  onNavigate,
   cartCount,
   wishlistCount,
   onOpenCart,
@@ -49,12 +57,20 @@ export const Header: React.FC<HeaderProps> = ({
     storeSettings?.announcementText ||
     'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি সুবিধা | ২-৩ দিনে হোম ডেলিভারি | দেখে নিয়ে মূল্য পরিশোধ';
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+  const handleNav = (page: PageRoute) => {
+    onNavigate(page);
+    setMobileMenuOpen(false);
   };
+
+  const navLinks: { id: PageRoute; label: string; badge?: string }[] = [
+    { id: 'home', label: 'হোম' },
+    { id: 'shop', label: 'শপ (সব শাড়ি)' },
+    { id: 'tracking', label: 'ট্র্যাকিং' },
+    { id: 'reviews', label: 'রিভিউ' },
+    { id: 'care', label: 'শাড়ির যত্ন' },
+    { id: 'about', label: 'আমাদের গল্প' },
+    { id: 'contact', label: 'যোগাযোগ' },
+  ];
 
   return (
     <header className="sticky top-0 z-50 shadow-xs">
@@ -74,11 +90,13 @@ export const Header: React.FC<HeaderProps> = ({
               <span>হটলাইন: {phone}</span>
             </a>
             <button
-              onClick={onOpenTracking}
-              className="hover:text-emerald-400 transition-colors flex items-center gap-1 cursor-pointer"
+              onClick={() => handleNav('tracking')}
+              className={`hover:text-emerald-300 transition-colors flex items-center gap-1 cursor-pointer ${
+                currentPage === 'tracking' ? 'text-emerald-300 font-bold' : 'text-emerald-400'
+              }`}
             >
-              <PackageCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400">ট্র্যাকিং</span>
+              <PackageCheck className="w-3.5 h-3.5" />
+              <span>অর্ডার ট্র্যাক</span>
             </button>
             <button
               onClick={onOpenAdmin}
@@ -99,15 +117,15 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-rose-200 hover:text-white hover:bg-rose-950/60 rounded-lg cursor-pointer transition-colors"
+                className="lg:hidden p-2 text-rose-200 hover:text-white hover:bg-rose-950/60 rounded-lg cursor-pointer transition-colors"
                 aria-label="Toggle Menu"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
 
-              <a
-                href="#"
-                className="flex items-center group py-1 select-none"
+              <button
+                onClick={() => handleNav('home')}
+                className="flex items-center group py-1 select-none cursor-pointer text-left"
                 aria-label="Ambia Saree Bari"
               >
                 {storeSettings?.logoType === 'image' && storeSettings?.logoUrl ? (
@@ -120,51 +138,46 @@ export const Header: React.FC<HeaderProps> = ({
                     }}
                   />
                 ) : (
-                  <span className="font-['Playfair_Display',serif] font-black text-xl sm:text-2xl md:text-[28px] tracking-tight text-white group-hover:text-amber-200 transition-colors leading-none drop-shadow-sm whitespace-nowrap">
+                  <span className="font-['Playfair_Display',serif] font-black text-xl sm:text-2xl md:text-[26px] tracking-tight text-white group-hover:text-amber-200 transition-colors leading-none drop-shadow-sm whitespace-nowrap">
                     Ambia Saree Bari
                   </span>
                 )}
-              </a>
+              </button>
             </div>
 
             {/* Desktop Navigation links */}
-            <nav className="hidden md:flex items-center gap-8 text-sm font-semibold">
-              <a href="#" className="text-white hover:text-rose-400 transition-colors">
-                Home
-              </a>
-              <a
-                href="#products"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('products');
-                }}
-                className="text-rose-200 hover:text-white transition-colors cursor-pointer"
-              >
-                Shop
-              </a>
-              <a
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection('contact');
-                }}
-                className="text-rose-200 hover:text-white transition-colors cursor-pointer"
-              >
-                Contact us
-              </a>
-              <button
-                onClick={onOpenTracking}
-                className="text-rose-200 hover:text-emerald-400 transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <PackageCheck className="w-4 h-4 text-emerald-400" />
-                <span>অর্ডার ট্র্যাকিং</span>
-              </button>
+            <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-xs xl:text-sm font-semibold">
+              {navLinks.map((link) => {
+                const isActive = currentPage === link.id;
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => handleNav(link.id)}
+                    className={`relative py-1.5 transition-colors cursor-pointer select-none ${
+                      isActive
+                        ? 'text-white font-bold'
+                        : 'text-rose-200/85 hover:text-white'
+                    }`}
+                  >
+                    <span>{link.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-rose-500 via-amber-400 to-rose-500 rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
             </nav>
 
             {/* Right Action Buttons */}
-            <div className="flex items-center gap-1.5 sm:gap-3">
+            <div className="flex items-center gap-1 sm:gap-2.5">
               <button
-                onClick={() => setSearchOpen(!searchOpen)}
+                onClick={() => {
+                  setSearchOpen(!searchOpen);
+                  if (!searchOpen && currentPage !== 'shop') {
+                    // navigate to shop when user starts searching
+                    onNavigate('shop');
+                  }
+                }}
                 className="p-2 text-rose-200 hover:text-white hover:bg-rose-950/60 rounded-full transition-colors cursor-pointer"
                 title="শাড়ি খুঁজুন"
                 aria-label="Search sarees"
@@ -208,7 +221,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               <a
-                href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('হ্যালো, আমি গার্লস ফ্যাশন থেকে শাড়ি অর্ডার করতে চাই।')}`}
+                href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('হ্যালো, আমি আম্বিয়া শাড়ি বাড়ি থেকে শাড়ি অর্ডার করতে চাই।')}`}
                 target="_blank"
                 rel="noreferrer"
                 className="hidden xl:flex items-center gap-1.5 bg-[#25d366] hover:bg-[#20ba5a] text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-xs transition-transform active:scale-95 cursor-pointer ml-1"
@@ -228,7 +241,12 @@ export const Header: React.FC<HeaderProps> = ({
                   autoFocus
                   placeholder="শাড়ির নাম, জামদানি, ল্যামা সিল্ক, তাঁত বা কোড দিয়ে খুঁজুন..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    if (currentPage !== 'shop') {
+                      onNavigate('shop');
+                    }
+                  }}
                   className="w-full pl-10 pr-24 py-2 bg-[#1c0810] text-stone-100 border border-rose-900/60 rounded-full text-xs sm:text-sm outline-hidden focus:border-rose-500 focus:bg-[#240c16] transition-all shadow-inner placeholder:text-stone-400"
                 />
                 <Search className="w-4 h-4 text-rose-400 absolute left-3.5 top-2.5" />
@@ -254,65 +272,45 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Collapsible Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#16050b] border-t border-rose-950 px-4 py-4 space-y-2.5 shadow-2xl">
-          <a
-            href="#"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-semibold text-stone-100 hover:text-rose-400 border-b border-rose-950/80"
-          >
-            Home
-          </a>
-          <a
-            href="#products"
-            onClick={(e) => {
-              e.preventDefault();
-              setMobileMenuOpen(false);
-              scrollToSection('products');
-            }}
-            className="block py-2 text-sm font-semibold text-stone-100 hover:text-rose-400 border-b border-rose-950/80"
-          >
-            Shop (সব শাড়ি)
-          </a>
-          <a
-            href="#contact"
-            onClick={(e) => {
-              e.preventDefault();
-              setMobileMenuOpen(false);
-              scrollToSection('contact');
-            }}
-            className="block py-2 text-sm font-semibold text-stone-100 hover:text-rose-400 border-b border-rose-950/80"
-          >
-            Contact us (যোগাযোগ)
-          </a>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              onOpenTracking();
-            }}
-            className="w-full text-left py-2 text-sm font-semibold text-emerald-400 flex items-center gap-2 border-b border-rose-950/80 cursor-pointer"
-          >
-            <PackageCheck className="w-4 h-4 text-emerald-400" />
-            <span>অর্ডার ট্র্যাকিং</span>
-          </button>
+        <div className="lg:hidden bg-[#16050b] border-t border-rose-950 px-4 py-4 space-y-1.5 shadow-2xl">
+          {navLinks.map((link) => {
+            const isActive = currentPage === link.id;
+            return (
+              <button
+                key={link.id}
+                onClick={() => handleNav(link.id)}
+                className={`w-full text-left py-2 px-2.5 text-sm font-semibold rounded-xl flex items-center justify-between border-b border-rose-950/80 cursor-pointer ${
+                  isActive
+                    ? 'bg-rose-950/60 text-white font-bold text-amber-300'
+                    : 'text-stone-100 hover:text-rose-400'
+                }`}
+              >
+                <span>{link.label}</span>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
+              </button>
+            );
+          })}
+
           <button
             onClick={() => {
               setMobileMenuOpen(false);
               onOpenAdmin();
             }}
-            className="w-full text-left py-2 text-sm font-semibold text-rose-300 flex items-center gap-2 cursor-pointer"
+            className="w-full text-left py-2 px-2.5 text-sm font-semibold text-rose-300 flex items-center gap-2 cursor-pointer border-b border-rose-950/80"
           >
             <LayoutDashboard className="w-4 h-4" />
             <span>অ্যাডমিন ও মার্চেন্ট প্যানেল</span>
           </button>
+
           <div className="pt-2">
             <a
-              href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('হ্যালো, আমি গার্লস ফ্যাশন থেকে শাড়ি অর্ডার করতে চাই।')}`}
+              href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('হ্যালো, আমি আম্বিয়া শাড়ি বাড়ি থেকে শাড়ি অর্ডার করতে চাই।')}`}
               target="_blank"
               rel="noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-[#25d366] text-white py-2 rounded-lg font-bold text-xs shadow-xs"
+              className="w-full flex items-center justify-center gap-2 bg-[#25d366] text-white py-2 rounded-xl font-bold text-xs shadow-xs"
             >
               <MessageCircle className="w-4 h-4 fill-current" />
-              <span>হোয়াটসঅ্যাপে অর্ডার করুন ({phone})</span>
+              <span>হোয়াটসঅ্যাপে যোগাযোগ ({phone})</span>
             </a>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { CheckCircle, Search } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import {
   Product,
   CartItem,
@@ -12,6 +12,7 @@ import {
   CategoryHighlight,
   FAQItem,
   CareTip,
+  PageRoute,
 } from './types';
 import {
   initialProducts,
@@ -28,8 +29,6 @@ import {
 } from './data/initialData';
 
 import { Header } from './components/Header';
-import { HeroSlider } from './components/HeroSlider';
-import { ProductCard } from './components/ProductCard';
 import { ProductQuickViewModal } from './components/ProductQuickViewModal';
 import { CheckoutModal } from './components/CheckoutModal';
 import { OrderSuccessModal } from './components/OrderSuccessModal';
@@ -37,13 +36,76 @@ import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { CartDrawer } from './components/CartDrawer';
 import { WishlistDrawer } from './components/WishlistDrawer';
 import { AdminPanelModal } from './components/AdminPanelModal';
-import { ReviewsSection } from './components/ReviewsSection';
-import { SareeCareTips } from './components/SareeCareTips';
-import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { MobileBottomBar } from './components/MobileBottomBar';
 
+// Pages
+import { HomePage } from './pages/HomePage';
+import { ShopPage } from './pages/ShopPage';
+import { ContactPage } from './pages/ContactPage';
+import { TrackingPage } from './pages/TrackingPage';
+import { ReviewsPage } from './pages/ReviewsPage';
+import { CareTipsPage } from './pages/CareTipsPage';
+import { AboutPage } from './pages/AboutPage';
+
 export default function App() {
+  // Navigation & Multi-page Routing
+  const getInitialPage = (): PageRoute => {
+    try {
+      const hash = window.location.hash.replace('#/', '').replace('#', '').toLowerCase();
+      const validPages: PageRoute[] = [
+        'home',
+        'shop',
+        'contact',
+        'tracking',
+        'reviews',
+        'care',
+        'about',
+      ];
+      if (validPages.includes(hash as PageRoute)) {
+        return hash as PageRoute;
+      }
+    } catch {
+      // fallback
+    }
+    return 'home';
+  };
+
+  const [currentPage, setCurrentPage] = useState<PageRoute>(getInitialPage);
+
+  // Synchronize browser history and hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#/', '').replace('#', '').toLowerCase();
+      const validPages: PageRoute[] = [
+        'home',
+        'shop',
+        'contact',
+        'tracking',
+        'reviews',
+        'care',
+        'about',
+      ];
+      if (validPages.includes(hash as PageRoute)) {
+        setCurrentPage(hash as PageRoute);
+      } else if (!hash) {
+        setCurrentPage('home');
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const navigateTo = (page: PageRoute, category?: string) => {
+    if (category) {
+      setSelectedCategory(category);
+    }
+    setCurrentPage(page);
+    window.location.hash = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Cart state with localStorage
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
@@ -84,7 +146,7 @@ export default function App() {
     }
   });
 
-  // Coupons state with localStorage
+  // Coupons state
   const [coupons, setCoupons] = useState<Coupon[]>(() => {
     try {
       const saved = localStorage.getItem('asb_coupons');
@@ -94,7 +156,7 @@ export default function App() {
     }
   });
 
-  // Reviews state with localStorage
+  // Reviews state
   const [reviews, setReviews] = useState<Review[]>(() => {
     try {
       const saved = localStorage.getItem('asb_reviews');
@@ -104,28 +166,17 @@ export default function App() {
     }
   });
 
-  // Settings state with localStorage
+  // Store settings
   const [storeSettings, setStoreSettings] = useState<StoreSettings>(() => {
     try {
-      const saved = localStorage.getItem('asb_settings');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          ...defaultStoreSettings,
-          ...parsed,
-          storeName: 'Ambia Saree Bari',
-          storeNameEn: 'Ambia Saree Bari',
-          logoType: parsed.logoType === 'image' && parsed.logoUrl && !parsed.logoUrl.includes('girls_fashion_banner') ? 'image' : 'text',
-          logoUrl: parsed.logoUrl?.includes('girls_fashion_banner') ? '' : (parsed.logoUrl || ''),
-        };
-      }
-      return defaultStoreSettings;
+      const saved = localStorage.getItem('asb_store_settings');
+      return saved ? JSON.parse(saved) : defaultStoreSettings;
     } catch {
       return defaultStoreSettings;
     }
   });
 
-  // Hero slides state with localStorage
+  // Hero Slides
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(() => {
     try {
       const saved = localStorage.getItem('asb_hero_slides');
@@ -135,24 +186,18 @@ export default function App() {
     }
   });
 
-  // Hero settings state with localStorage
+  // Hero Settings
   const [heroSettings, setHeroSettings] = useState<HeroSettings>(() => {
     try {
       const saved = localStorage.getItem('asb_hero_settings');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return { ...defaultHeroSettings, ...parsed, fitMode: 'cover' };
-      }
-      return defaultHeroSettings;
+      return saved ? JSON.parse(saved) : defaultHeroSettings;
     } catch {
       return defaultHeroSettings;
     }
   });
 
-  // Category highlights state with localStorage
-  const [categoryHighlights, setCategoryHighlights] = useState<
-    CategoryHighlight[]
-  >(() => {
+  // Category Highlights
+  const [categoryHighlights, setCategoryHighlights] = useState<CategoryHighlight[]>(() => {
     try {
       const saved = localStorage.getItem('asb_category_highlights');
       return saved ? JSON.parse(saved) : defaultCategoryHighlights;
@@ -161,7 +206,7 @@ export default function App() {
     }
   });
 
-  // FAQs state with localStorage
+  // FAQs
   const [faqs, setFaqs] = useState<FAQItem[]>(() => {
     try {
       const saved = localStorage.getItem('asb_faqs');
@@ -171,7 +216,7 @@ export default function App() {
     }
   });
 
-  // Care tips state with localStorage
+  // Care Tips
   const [careTips, setCareTips] = useState<CareTip[]>(() => {
     try {
       const saved = localStorage.getItem('asb_care_tips');
@@ -181,15 +226,15 @@ export default function App() {
     }
   });
 
-  // Admin modal state
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  // Admin ERP Modal State
+  const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
 
-  // Sync to LocalStorage
+  // Sync to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('asb_cart', JSON.stringify(cart));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [cart]);
 
@@ -197,7 +242,7 @@ export default function App() {
     try {
       localStorage.setItem('asb_wishlist', JSON.stringify(wishlist));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [wishlist]);
 
@@ -205,7 +250,7 @@ export default function App() {
     try {
       localStorage.setItem('asb_orders', JSON.stringify(orders));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [orders]);
 
@@ -213,7 +258,7 @@ export default function App() {
     try {
       localStorage.setItem('asb_products', JSON.stringify(products));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [products]);
 
@@ -221,7 +266,7 @@ export default function App() {
     try {
       localStorage.setItem('asb_coupons', JSON.stringify(coupons));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [coupons]);
 
@@ -229,15 +274,15 @@ export default function App() {
     try {
       localStorage.setItem('asb_reviews', JSON.stringify(reviews));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [reviews]);
 
   useEffect(() => {
     try {
-      localStorage.setItem('asb_settings', JSON.stringify(storeSettings));
+      localStorage.setItem('asb_store_settings', JSON.stringify(storeSettings));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [storeSettings]);
 
@@ -245,7 +290,7 @@ export default function App() {
     try {
       localStorage.setItem('asb_hero_slides', JSON.stringify(heroSlides));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [heroSlides]);
 
@@ -253,18 +298,15 @@ export default function App() {
     try {
       localStorage.setItem('asb_hero_settings', JSON.stringify(heroSettings));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [heroSettings]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        'asb_category_highlights',
-        JSON.stringify(categoryHighlights),
-      );
+      localStorage.setItem('asb_category_highlights', JSON.stringify(categoryHighlights));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [categoryHighlights]);
 
@@ -272,7 +314,7 @@ export default function App() {
     try {
       localStorage.setItem('asb_faqs', JSON.stringify(faqs));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [faqs]);
 
@@ -280,11 +322,10 @@ export default function App() {
     try {
       localStorage.setItem('asb_care_tips', JSON.stringify(careTips));
     } catch (e) {
-      console.error(e);
+      console.warn('LocalStorage save failed', e);
     }
   }, [careTips]);
 
-  // Reset Demo Data
   const handleResetDemoData = () => {
     setProducts(initialProducts);
     setOrders(initialOrders);
@@ -301,7 +342,7 @@ export default function App() {
     localStorage.removeItem('asb_orders');
     localStorage.removeItem('asb_coupons');
     localStorage.removeItem('asb_reviews');
-    localStorage.removeItem('asb_settings');
+    localStorage.removeItem('asb_store_settings');
     localStorage.removeItem('asb_hero_slides');
     localStorage.removeItem('asb_hero_settings');
     localStorage.removeItem('asb_category_highlights');
@@ -312,8 +353,6 @@ export default function App() {
   // UI States
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('featured');
-  const [isHotDealOnly, setIsHotDealOnly] = useState<boolean>(false);
 
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState<boolean>(false);
@@ -331,47 +370,6 @@ export default function App() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
-
-  const productsSectionRef = useRef<HTMLDivElement>(null);
-
-  const scrollToProducts = () => {
-    productsSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  // Filtered and Sorted Products
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
-
-    if (selectedCategory !== 'all') {
-      result = result.filter((p) => p.category === selectedCategory);
-    }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.code.toLowerCase().includes(q) ||
-          p.fabric.toLowerCase().includes(q) ||
-          p.categoryName.toLowerCase().includes(q) ||
-          p.colors.some((c) => c.name.toLowerCase().includes(q)),
-      );
-    }
-
-    if (isHotDealOnly) {
-      result = result.filter((p) => p.isHotDeal || p.isBestSeller);
-    }
-
-    if (sortBy === 'price_asc') {
-      result.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price_desc') {
-      result.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'rating') {
-      result.sort((a, b) => b.rating - a.rating);
-    }
-
-    return result;
-  }, [products, selectedCategory, searchQuery, isHotDealOnly, sortBy]);
 
   // Cart operations
   const handleAddToCart = (product: Product, quantity = 1, color?: string) => {
@@ -478,15 +476,17 @@ export default function App() {
         </div>
       )}
 
-      {/* Header */}
+      {/* Global Header */}
       <Header
+        currentPage={currentPage}
+        onNavigate={navigateTo}
         cartCount={totalCartCount}
         wishlistCount={wishlist.length}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenWishlist={() => setIsWishlistOpen(true)}
         onOpenTracking={() => {
           setTrackingOrderId(undefined);
-          setIsTrackingOpen(true);
+          navigateTo('tracking');
         }}
         onOpenAdmin={() => setIsAdminOpen(true)}
         searchQuery={searchQuery}
@@ -494,171 +494,117 @@ export default function App() {
         selectedCategory={selectedCategory}
         onSelectCategory={(cat) => {
           setSelectedCategory(cat);
-          scrollToProducts();
+          navigateTo('shop', cat);
         }}
         cartTotal={cartSubtotal}
         storeSettings={storeSettings}
       />
 
-      {/* Hero Carousel Slider */}
-      <HeroSlider
-        slides={heroSlides}
-        heroSettings={heroSettings}
-        categoryHighlights={categoryHighlights}
-        storeSettings={storeSettings}
-        onExploreClick={scrollToProducts}
-        onQuickOrderHero={() => handleDirectOrder(products[0])}
-        onSelectCategory={(cat) => {
-          setSelectedCategory(cat);
-          scrollToProducts();
-        }}
-      />
+      {/* Dynamic Multi-Page Router View */}
+      <main className="flex-1">
+        {currentPage === 'home' && (
+          <HomePage
+            heroSlides={heroSlides}
+            heroSettings={heroSettings}
+            categoryHighlights={categoryHighlights}
+            storeSettings={storeSettings}
+            products={products}
+            wishlist={wishlist}
+            reviews={reviews}
+            faqs={faqs}
+            onToggleWishlist={handleToggleWishlist}
+            onAddToCart={(p, qty, color) => handleAddToCart(p, qty, color)}
+            onDirectOrder={(p, qty, color) => handleDirectOrder(p, qty, color)}
+            onQuickView={(p) => setQuickViewProduct(p)}
+            onNavigate={navigateTo}
+          />
+        )}
 
-      {/* Main Product Catalog Section */}
-      <section
-        id="products"
-        ref={productsSectionRef}
-        className="w-full bg-[#0e0407] py-8 sm:py-12 border-t border-rose-950/80 flex-1"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          {/* Section Header */}
-          <div className="text-center mb-6 sm:mb-8">
-            <h2 className="font-sans font-black text-2xl sm:text-3xl md:text-4xl text-rose-400 tracking-tight">
-              All products
-            </h2>
-            <div className="w-12 h-1 bg-rose-600 mx-auto rounded-full mt-2 mb-4 shadow-sm" />
+        {currentPage === 'shop' && (
+          <ShopPage
+            products={products}
+            wishlist={wishlist}
+            initialCategory={selectedCategory}
+            onToggleWishlist={handleToggleWishlist}
+            onAddToCart={(p, qty, color) => handleAddToCart(p, qty, color)}
+            onDirectOrder={(p, qty, color) => handleDirectOrder(p, qty, color)}
+            onQuickView={(p) => setQuickViewProduct(p)}
+            onNavigate={navigateTo}
+          />
+        )}
 
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-4xl mx-auto mt-3">
-              {categories.map((cat) => {
-                const isSelected = selectedCategory === cat.id;
-                const count = products.filter(
-                  (p) => cat.id === 'all' || p.category === cat.id,
-                ).length;
+        {currentPage === 'contact' && (
+          <ContactPage
+            storeSettings={storeSettings}
+            onNavigate={navigateTo}
+          />
+        )}
 
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 text-white shadow-md shadow-rose-950/50 scale-105 border border-rose-500/50'
-                        : 'bg-[#18080f] text-rose-200 hover:text-white border border-rose-900/60 hover:border-rose-600 shadow-2xs'
-                    }`}
-                  >
-                    <span>{cat.name}</span>
-                    <span
-                      className={`ml-1 text-[11px] font-mono ${
-                        isSelected
-                          ? 'text-amber-300 font-bold'
-                          : 'text-rose-400/80'
-                      }`}
-                    >
-                      ({count})
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        {currentPage === 'tracking' && (
+          <TrackingPage
+            orders={orders}
+            prefilledOrderId={trackingOrderId}
+            storeSettings={storeSettings}
+            onNavigate={navigateTo}
+          />
+        )}
 
-          {/* Product Grid or Empty State */}
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-16 bg-[#18080f] rounded-2xl border border-rose-950 p-8 space-y-4 max-w-lg mx-auto shadow-xl">
-              <div className="w-14 h-14 bg-rose-950/80 text-rose-400 rounded-full flex items-center justify-center mx-auto border border-rose-900/60">
-                <Search className="w-6 h-6" />
-              </div>
-              <h3 className="font-bold text-base text-stone-100">
-                দুঃখিত! আপনার খোঁজা শাড়িটি পাওয়া যায়নি
-              </h3>
-              <p className="text-xs text-rose-300/80">
-                দয়া করে অন্য কোনো নাম বা ক্যাটাগরি দিয়ে চেষ্টা করুন।
-              </p>
-              <button
-                onClick={() => {
-                  setSelectedCategory('all');
-                  setSearchQuery('');
-                  setIsHotDealOnly(false);
-                }}
-                className="px-5 py-2 bg-gradient-to-r from-rose-700 to-rose-600 text-white text-xs font-bold rounded-full hover:from-rose-600 hover:to-rose-500 transition-colors cursor-pointer border border-rose-500/40 shadow-md"
-              >
-                সব শাড়ি দেখুন
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  isWishlisted={wishlist.some((w) => w.id === product.id)}
-                  onToggleWishlist={handleToggleWishlist}
-                  onAddToCart={(p) => handleAddToCart(p, 1)}
-                  onDirectOrder={(p) => handleDirectOrder(p, 1)}
-                  onQuickView={(p) => setQuickViewProduct(p)}
-                />
-              ))}
-            </div>
-          )}
+        {currentPage === 'reviews' && (
+          <ReviewsPage
+            reviews={reviews}
+            onAddReview={(newRev) => {
+              setReviews((prev) => [newRev, ...prev]);
+              showToast('আপনার রিভিউ সফলভাবে যুক্ত হয়েছে!');
+            }}
+            onNavigate={navigateTo}
+          />
+        )}
 
-          {/* Bottom Catalog Status / Button */}
-          <div className="mt-8 text-center">
-            {selectedCategory !== 'all' ? (
-              <button
-                onClick={() => setSelectedCategory('all')}
-                className="px-6 py-2.5 bg-[#18080f] hover:bg-[#250914] text-rose-300 hover:text-white border border-rose-900/80 font-bold text-xs sm:text-sm rounded-full shadow-md transition-colors cursor-pointer inline-flex items-center gap-2"
-              >
-                <span>সব শাড়ি কালেকশন দেখুন ({products.length}টি শাড়ি)</span>
-              </button>
-            ) : (
-              <div className="inline-flex items-center gap-2 px-5 py-2 bg-[#18080f]/80 border border-rose-950 text-rose-300 text-xs font-semibold rounded-full shadow-xs">
-                <span>
-                  সবগুলো প্রিমিয়াম শাড়ি প্রদর্শিত হচ্ছে ({products.length}টি আইটেম)
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+        {currentPage === 'care' && (
+          <CareTipsPage
+            careTips={careTips}
+            storeSettings={storeSettings}
+            onNavigate={navigateTo}
+          />
+        )}
 
-      {/* Saree Care Tips */}
-      <SareeCareTips careTips={careTips} />
+        {currentPage === 'about' && (
+          <AboutPage
+            storeSettings={storeSettings}
+            onNavigate={navigateTo}
+          />
+        )}
+      </main>
 
-      {/* Authentic Customer Reviews with Chat Screenshots */}
-      <ReviewsSection reviews={reviews} />
-
-      {/* FAQ Section */}
-      <FAQSection faqs={faqs} />
-
-      {/* Footer */}
+      {/* Global Footer */}
       <Footer
         storeSettings={storeSettings}
         onSelectCategory={(cat) => {
           setSelectedCategory(cat);
-          scrollToProducts();
+          navigateTo('shop', cat);
         }}
         onOpenTracking={() => {
           setTrackingOrderId(undefined);
-          setIsTrackingOpen(true);
+          navigateTo('tracking');
         }}
         onOpenAdmin={() => setIsAdminOpen(true)}
+        onNavigate={navigateTo}
       />
 
       {/* Mobile Floating Actions & Bottom Navigation */}
       <MobileBottomBar
+        currentPage={currentPage}
+        onNavigate={navigateTo}
         cartCount={totalCartCount}
         wishlistCount={wishlist.length}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenWishlist={() => setIsWishlistOpen(true)}
-        onOpenTracking={() => {
-          setTrackingOrderId(undefined);
-          setIsTrackingOpen(true);
-        }}
+        onOpenTracking={() => navigateTo('tracking')}
         onScrollToTop={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         storeSettings={storeSettings}
       />
 
-      {/* MODALS & DRAWERS */}
+      {/* MODALS & DRAWERS (Available from any page) */}
       {/* 1. Product Quick View Modal */}
       <ProductQuickViewModal
         product={quickViewProduct}
@@ -692,7 +638,7 @@ export default function App() {
         onClose={() => setPlacedOrder(null)}
         onOpenTracking={(orderId) => {
           setTrackingOrderId(orderId);
-          setIsTrackingOpen(true);
+          navigateTo('tracking');
         }}
       />
 
@@ -717,7 +663,7 @@ export default function App() {
         onDirectOrder={(p) => handleDirectOrder(p, 1)}
       />
 
-      {/* 6. Order Tracking Modal */}
+      {/* 6. Order Tracking Modal (Fallback quick popup) */}
       <OrderTrackingModal
         isOpen={isTrackingOpen}
         onClose={() => setIsTrackingOpen(false)}
