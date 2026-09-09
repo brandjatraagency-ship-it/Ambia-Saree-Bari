@@ -95,25 +95,26 @@ export const HomePage: React.FC<HomePageProps> = ({
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+        {/* Centered responsive container for category cards across all devices */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5 max-w-5xl mx-auto">
           {categoryHighlights.map((cat) => (
             <button
               key={cat.id}
               onClick={() => onNavigate('shop', cat.id)}
-              className="group relative bg-[#18080f] rounded-2xl overflow-hidden border border-rose-950/80 hover:border-rose-700/80 transition-all p-3 text-center flex flex-col items-center justify-center gap-2 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
+              className="group relative bg-[#18080f] hover:bg-[#220914] rounded-2xl overflow-hidden border border-rose-950/80 hover:border-rose-600/80 transition-all p-3.5 sm:p-5 text-center flex flex-col items-center justify-center gap-2.5 hover:-translate-y-1 hover:shadow-xl shadow-md cursor-pointer w-[calc(50%-0.45rem)] sm:w-44 md:w-48 lg:w-52 shrink-0"
             >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-rose-900/60 group-hover:border-amber-400 transition-colors shadow-inner">
+              <div className="w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 rounded-full overflow-hidden border-2 border-rose-600/60 group-hover:border-amber-400 transition-colors shadow-inner relative">
                 <img
                   src={cat.imageUrl}
                   alt={cat.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <div>
-                <h3 className="text-xs sm:text-sm font-bold text-stone-200 group-hover:text-amber-300 transition-colors line-clamp-1">
+              <div className="w-full">
+                <h3 className="text-xs sm:text-sm md:text-base font-bold text-stone-100 group-hover:text-amber-300 transition-colors truncate">
                   {cat.title}
                 </h3>
-                <span className="text-[10px] text-rose-300/80">কালেকশন দেখুন</span>
+                <span className="text-[10px] sm:text-xs text-rose-300/80 block mt-0.5">কালেকশন দেখুন</span>
               </div>
             </button>
           ))}
